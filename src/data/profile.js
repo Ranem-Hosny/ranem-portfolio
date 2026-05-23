@@ -51,7 +51,7 @@ export const experience = [
   {
     company: 'Najah Tech',
     role: 'Frontend Developer',
-    period: '2025 — Present',
+    period: '2026 — Present',
     detail:
       'Building bilingual marketing and product interfaces with React — shipping client projects including Waves Tech and Qumra Labs.',
   },
