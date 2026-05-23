@@ -1,0 +1,271 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   THEME TOKENS — toggled via the `dark` class on <html>
+   ============================================================ */
+:root {
+  /* Light mode — bright lab, neon still alive */
+  --bg: #e9ebf3;
+  --bg-soft: #f5f6fb;
+  --surface: rgba(255, 255, 255, 0.62);
+  --surface-solid: #ffffff;
+  --border: rgba(20, 23, 42, 0.1);
+  --border-strong: rgba(20, 23, 42, 0.18);
+  --ink: #14172a;
+  --muted: #545a73;
+  --faint: #9298b0;
+  --accent: #0e9bb8;
+  --accent-2: #7c3aed;
+  --accent-3: #2563eb;
+  --glow: 0.35;
+  --grid: rgba(20, 23, 42, 0.055);
+  --noise: 0.025;
+  color-scheme: light;
+}
+
+html.dark {
+  /* Dark mode — deep-space terminal */
+  --bg: #060711;
+  --bg-soft: #0a0c18;
+  --surface: rgba(255, 255, 255, 0.035);
+  --surface-solid: #0d0f1d;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --ink: #e9ebf6;
+  --muted: #8b91ab;
+  --faint: #555a78;
+  --accent: #22d3ee;
+  --accent-2: #8b5cf6;
+  --accent-3: #3b82f6;
+  --glow: 1;
+  --grid: rgba(255, 255, 255, 0.045);
+  --noise: 0.04;
+  color-scheme: dark;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+* {
+  box-sizing: border-box;
+}
+
+/* Smooth scrolling is handled programmatically by Lenis in App.jsx */
+
+body {
+  margin: 0;
+  font-family: 'Cairo', system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background-color 0.6s ease, color 0.6s ease;
+}
+
+/* Hide native cursor on fine-pointer devices — replaced by CustomCursor */
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+  a,
+  button,
+  [data-cursor] {
+    cursor: none;
+  }
+}
+
+::selection {
+  background: var(--accent-2);
+  color: #fff;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--accent), var(--accent-2));
+  border-radius: 99px;
+  border: 2px solid var(--bg);
+}
+
+section {
+  scroll-margin-top: 90px;
+}
+
+/* ============================================================
+   COMPONENT UTILITIES
+   ============================================================ */
+@layer components {
+  .glass {
+    background: var(--surface);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--border);
+  }
+
+  .text-gradient {
+    background: linear-gradient(110deg, var(--accent), var(--accent-2) 55%, var(--accent-3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-gradient-soft {
+    background: linear-gradient(110deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Code-comment label used above section titles */
+  .kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* Contact form input */
+  .contact-input {
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border);
+    background: var(--bg-soft);
+    padding: 0.7rem 0.9rem;
+    font-size: 0.9rem;
+    color: var(--ink);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .contact-input::placeholder {
+    color: var(--faint);
+  }
+  .contact-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+
+  /* Animated gradient border wrapper */
+  .border-glow {
+    position: relative;
+  }
+  .border-glow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--accent), transparent 40%, transparent 60%, var(--accent-2));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+}
+
+@layer utilities {
+  .glow-text {
+    text-shadow: 0 0 28px rgba(34, 211, 238, calc(0.55 * var(--glow)));
+  }
+  .perspective {
+    perspective: 1400px;
+  }
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+}
+
+/* ============================================================
+   AMBIENT BACKGROUND ELEMENTS
+   ============================================================ */
+.grid-bg {
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 58px 58px;
+}
+
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: var(--noise);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Custom cursor */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  border-radius: 50%;
+  mix-blend-mode: difference;
+}
+.cursor-dot {
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  background: #fff;
+}
+.cursor-ring {
+  width: 38px;
+  height: 38px;
+  margin: -19px 0 0 -19px;
+  border: 1.5px solid rgba(255, 255, 255, 0.65);
+}
+
+/* Typing caret */
+.caret {
+  display: inline-block;
+  width: 3px;
+  margin-left: 4px;
+  background: var(--accent);
+  animation: caret 1.05s steps(1) infinite;
+  box-shadow: 0 0 12px var(--accent);
+}
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Animated conic ring (loader) */
+.conic-ring {
+  background: conic-gradient(from 0deg, transparent, var(--accent), var(--accent-2), transparent);
+}
+
+/* Shimmer sweep used on skill bars / buttons */
+.shimmer {
+  background-image: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+}
+
+/* ============================================================
+   ACCESSIBILITY — respect reduced motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

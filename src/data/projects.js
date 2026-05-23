@@ -1,0 +1,113 @@
+/**
+ * projects.js — your showcase.
+ * ▸ To add a project, copy one object and update the fields.
+ * `gradient` drives the generated preview artwork (no image files needed).
+ * Drop a real screenshot path into `image` and the preview will use it.
+ * Drop an `.mp4` path into `video` to use a hover-played video instead.
+ * Set `company` if the project was built for an employer / client company.
+ */
+export const projects = [
+  {
+    id: 'naqaa',
+    title: 'naQaa',
+    category: 'Multi-Vendor Marketplace',
+    year: '2025',
+    description:
+      'A multi-vendor e-commerce platform dedicated to organic products — a customer storefront paired with a seller dashboard, letting multiple vendors list and manage their products from one place.',
+    tech: ['React', 'Tailwind CSS'],
+    gradient: ['#34d399', '#a3e635'],
+    image: '/projects/naqaa.png',
+    live: 'https://naqaa-ecommerce.vercel.app/',
+    github: null,
+    featured: true,
+  },
+  {
+    id: 'hr-system',
+    title: 'HR System Management',
+    category: 'Internal HR Platform',
+    year: '2025',
+    description:
+      'A role-based HR management web app serving managers, HR staff and employees — with attendance tracking, permission requests, approval workflows, and task management that ties into salary calculations.',
+    tech: ['JavaScript', 'SCSS', 'HTML', 'Bootstrap'],
+    gradient: ['#6366f1', '#a855f7'],
+    image: '/projects/hr.png',
+    live: null,
+    github: 'https://github.com/mohamedobaya/hr_system_project_iti',
+    iti: true,
+    featured: false,
+  },
+  {
+    id: 'yummygo',
+    title: 'YUMMYGO',
+    category: 'CRUD Application',
+    year: '2025',
+    description:
+      'A React CRUD application showcasing add, edit, delete and filter operations on a food-item menu — built with DaisyUI components for a clean, responsive interface.',
+    tech: ['React', 'Tailwind CSS', 'DaisyUI'],
+    gradient: ['#fb923c', '#f43f5e'],
+    image: '/projects/yummygo.png',
+    live: 'https://ranem-hosny.github.io/YUMMYGO/',
+    github: 'https://github.com/ranem-hosny/YUMMYGO',
+    featured: false,
+  },
+  {
+    id: 'postify',
+    title: 'POSTIFY',
+    category: 'Post Management App',
+    year: '2025',
+    description:
+      'A React + Vite app for creating, viewing, editing and organising posts — powered by a local JSON-server REST API for full CRUD on a lightweight stack.',
+    tech: ['React', 'Vite', 'JSON Server'],
+    gradient: ['#ec4899', '#6366f1'],
+    image: null,
+    video: '/projects/postify.mp4',
+    live: null,
+    github: 'https://github.com/Ranem-Hosny/POSTIFY',
+    featured: false,
+  },
+  {
+    id: 'atc',
+    title: 'ATC',
+    category: 'Education Platform',
+    year: '2024 — 2025',
+    description:
+      'A bilingual website for an educational institution in Saudi Arabia — delivering courses, programs and admissions information through a polished, accessible interface built with Angular Material.',
+    tech: ['Angular', 'Angular Material', 'TypeScript'],
+    gradient: ['#14b8a6', '#06b6d4'],
+    image: '/projects/atc.png',
+    live: 'https://atc.edu.sa/home',
+    github: null,
+    company: 'Softzone',
+    featured: true,
+  },
+  {
+    id: 'waves',
+    title: 'Waves Tech',
+    category: 'Corporate Tech Website',
+    year: '2026',
+    description:
+      'A bilingual corporate website for a technology consultancy specialising in cybersecurity, artificial intelligence and cloud computing — a polished marketing site with a PHP-powered backend.',
+    tech: ['React', 'PHP'],
+    gradient: ['#0ea5e9', '#1e40af'],
+    image: '/projects/waves.png',
+    live: 'https://royalblue-seahorse-303258.hostingersite.com/',
+    github: null,
+    company: 'Najah Tech',
+    featured: true,
+  },
+  {
+    id: 'qumra',
+    title: 'Qumra Labs',
+    category: 'Medical Lab Website',
+    year: '2026',
+    description:
+      'A website for a medical laboratory offering accurate diagnostic tests with at-home sample collection — patients can browse available tests and request a home visit online.',
+    tech: ['HTML', 'CSS', 'JavaScript'],
+    gradient: ['#3b82f6', '#06b6d4'],
+    image: '/projects/qumra.png',
+    live: 'https://qumralabb.com/',
+    github: null,
+    company: 'Najah Tech',
+    featured: true,
+  },
+]
