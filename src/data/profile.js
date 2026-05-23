@@ -20,7 +20,7 @@ export const profile = {
 
   location: 'Mansoura, Egypt',
   availability: 'Available for new opportunities',
-  email: 'ranemhosni200@gmail.com',
+  email: 'ranemhosni2001@gmail.com',
   yearsExperience: 3,
   resume: '/Ranem-Hosny-Frontend-CV.pdf',
 
