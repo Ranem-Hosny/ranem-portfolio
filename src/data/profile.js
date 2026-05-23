@@ -41,8 +41,27 @@ export const profile = {
 // Small headline stats shown in the Hero
 export const stats = [
   { value: '3+', label: 'Years of experience' },
-  { value: '20+', label: 'Projects built' },
-  { value: '2', label: 'Tech scholarships' },
+  { value: '10+', label: 'Projects built' },
+  { value: '2', label: 'Companies' },
+  { value: '2', label: 'Scholarships' },
+]
+
+// Work experience shown in the About section (most recent first)
+export const experience = [
+  {
+    company: 'Najah Tech',
+    role: 'Frontend Developer',
+    period: '2025 — Present',
+    detail:
+      'Building bilingual marketing and product interfaces with React — shipping client projects including Waves Tech and Qumra Labs.',
+  },
+  {
+    company: 'Softzone',
+    role: 'Frontend Developer',
+    period: '2024 — 2025',
+    detail:
+      'Built and shipped client-facing web applications with Angular and Angular Material — including the ATC educational platform.',
+  },
 ]
 
 // Training & scholarships shown in the About section

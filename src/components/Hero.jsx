@@ -131,10 +131,10 @@ export default function Hero({ start }) {
           {/* stats */}
           <motion.div
             variants={item}
-            className="mt-12 grid max-w-md grid-cols-3 divide-x divide-line"
+            className="mt-12 grid max-w-lg grid-cols-2 gap-y-6 sm:grid-cols-4 sm:divide-x sm:divide-line sm:gap-y-0"
           >
             {stats.map((s) => (
-              <div key={s.label} className="px-2 text-center first:pl-0">
+              <div key={s.label} className="px-2 text-center sm:first:pl-0">
                 <div className="text-2xl font-extrabold text-gradient-soft sm:text-3xl">
                   {s.value}
                 </div>
