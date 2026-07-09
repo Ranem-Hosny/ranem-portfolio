@@ -51,11 +51,9 @@ export default function Loader({ onDone }) {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.6 }}
         >
-          <img
-            src="/me.png"
-            alt={profile.name}
-            className="h-full w-full object-cover object-top"
-          />
+          <span className="text-2xl font-black tracking-tight text-gradient glow-text">
+            {profile.firstName}
+          </span>
         </motion.div>
       </div>
 

@@ -31,118 +31,97 @@ export default function Hero({ start }) {
 
       {/* ── Content ──────────────────────────────────────── */}
       <motion.div
-        className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14"
+        className="relative mx-auto flex w-full max-w-3xl flex-col items-center px-6 text-center"
         variants={container}
         initial="hidden"
         animate={start ? 'show' : 'hidden'}
       >
-        {/* LEFT — photo */}
+        {/* big name on top */}
+        <motion.h1
+          variants={item}
+          className="font-extrabold leading-[1.05] tracking-tight text-[clamp(2.2rem,5.6vw,4.2rem)]"
+        >
+          <span className="text-ink">{profile.firstName}</span>{' '}
+          <span className="text-gradient glow-text">{profile.lastName}</span>
+        </motion.h1>
+
+        {/* typing role */}
         <motion.div
           variants={item}
-          className="relative order-2 mx-auto w-full max-w-xs sm:max-w-sm lg:order-1 lg:mx-0"
+          className="mt-6 flex items-center gap-2 font-mono text-lg sm:text-2xl"
         >
-          {/* glow halo behind the circle */}
-          <div className="pointer-events-none absolute -inset-6 -z-10 rounded-full bg-gradient-to-br from-cyan/30 via-violet/25 to-electric/15 blur-3xl" />
-
-          {/* circular photo */}
-          <div className="relative aspect-square overflow-hidden rounded-full border border-line-strong bg-bg shadow-2xl">
-            <img
-              src="/me.png"
-              alt={profile.name}
-              className="h-full w-full object-cover"
-            />
-          </div>
+          <span className="text-faint">{'<'}</span>
+          <span className="font-semibold text-ink">{role}</span>
+          <span className="caret h-6 sm:h-7" />
+          <span className="text-faint">{'/>'}</span>
         </motion.div>
 
-        {/* RIGHT — name + content */}
-        <div className="order-1 lg:order-2">
-          {/* big name on top */}
-          <motion.h1
-            variants={item}
-            className="text-left font-extrabold leading-[1.05] tracking-tight text-[clamp(2.2rem,5.6vw,4.2rem)]"
+        {/* tagline */}
+        <motion.p
+          variants={item}
+          className="mt-6 max-w-md text-base leading-relaxed text-muted sm:text-lg"
+        >
+          {profile.tagline}
+        </motion.p>
+
+        {/* CTAs */}
+        <motion.div
+          variants={item}
+          className="mt-8 flex flex-col items-center gap-3.5 sm:flex-row sm:flex-wrap sm:justify-center"
+        >
+          <MagneticButton
+            href="#work"
+            onClick={(e) => {
+              e.preventDefault()
+              smoothScrollTo('work', -80)
+            }}
+            className="group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-cyan to-violet px-7 py-3.5 font-semibold text-bg shadow-glow sm:w-auto"
           >
-            <span className="text-ink">{profile.firstName}</span>{' '}
-            <span className="text-gradient glow-text">{profile.lastName}</span>
-          </motion.h1>
+            <span className="shimmer absolute inset-0 animate-shimmer opacity-0 transition-opacity group-hover:opacity-100" />
+            View Projects
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M5 12h14M13 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </MagneticButton>
 
-          {/* typing role */}
-          <motion.div
-            variants={item}
-            className="mt-6 flex items-center gap-2 font-mono text-lg sm:text-2xl"
+          <MagneticButton
+            href="#contact"
+            onClick={(e) => {
+              e.preventDefault()
+              smoothScrollTo('contact', -80)
+            }}
+            className="glass inline-flex w-full items-center justify-center gap-2 rounded-xl border-line-strong px-7 py-3.5 font-semibold text-ink transition-colors hover:border-accent sm:w-auto"
           >
-            <span className="text-faint">{'<'}</span>
-            <span className="font-semibold text-ink">{role}</span>
-            <span className="caret h-6 sm:h-7" />
-            <span className="text-faint">{'/>'}</span>
-          </motion.div>
+            Contact Me
+            <span className="h-2 w-2 rounded-full bg-accent" />
+          </MagneticButton>
 
-          {/* tagline */}
-          <motion.p
-            variants={item}
-            className="mt-6 max-w-md text-base leading-relaxed text-muted sm:text-lg"
+          <a
+            href={profile.resume}
+            download
+            className="group inline-flex items-center gap-2 px-1 py-2 text-sm font-semibold text-muted transition-colors hover:text-accent"
           >
-            {profile.tagline}
-          </motion.p>
+            <svg viewBox="0 0 24 24" className="h-4 w-4 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3v14M5 12l7 7 7-7M5 21h14" />
+            </svg>
+            Download CV
+          </a>
+        </motion.div>
 
-          {/* CTAs */}
-          <motion.div
-            variants={item}
-            className="mt-8 flex flex-col items-start gap-3.5 sm:flex-row sm:flex-wrap sm:items-center"
-          >
-            <MagneticButton
-              href="#work"
-              onClick={(e) => {
-                e.preventDefault()
-                smoothScrollTo('work', -80)
-              }}
-              className="group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-cyan to-violet px-7 py-3.5 font-semibold text-bg shadow-glow sm:w-auto"
-            >
-              <span className="shimmer absolute inset-0 animate-shimmer opacity-0 transition-opacity group-hover:opacity-100" />
-              View Projects
-              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M13 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </MagneticButton>
-
-            <MagneticButton
-              href="#contact"
-              onClick={(e) => {
-                e.preventDefault()
-                smoothScrollTo('contact', -80)
-              }}
-              className="glass inline-flex w-full items-center justify-center gap-2 rounded-xl border-line-strong px-7 py-3.5 font-semibold text-ink transition-colors hover:border-accent sm:w-auto"
-            >
-              Contact Me
-              <span className="h-2 w-2 rounded-full bg-accent" />
-            </MagneticButton>
-
-            <a
-              href={profile.resume}
-              download
-              className="group inline-flex items-center gap-2 px-1 py-2 text-sm font-semibold text-muted transition-colors hover:text-accent"
-            >
-              <svg viewBox="0 0 24 24" className="h-4 w-4 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 3v14M5 12l7 7 7-7M5 21h14" />
-              </svg>
-              Download CV
-            </a>
-          </motion.div>
-
-          {/* stats */}
-          <motion.div
-            variants={item}
-            className="mt-12 grid max-w-lg grid-cols-2 gap-y-6 sm:grid-cols-4 sm:divide-x sm:divide-line sm:gap-y-0"
-          >
-            {stats.map((s) => (
-              <div key={s.label} className="px-2 text-center sm:first:pl-0">
-                <div className="text-2xl font-extrabold text-gradient-soft sm:text-3xl">
-                  {s.value}
-                </div>
-                <div className="mt-1 text-xs text-faint sm:text-sm">{s.label}</div>
+        {/* stats */}
+        <motion.div
+          variants={item}
+          className="mt-12 grid max-w-lg grid-cols-2 gap-y-6 sm:grid-cols-4 sm:divide-x sm:divide-line sm:gap-y-0"
+        >
+          {stats.map((s) => (
+            <div key={s.label} className="px-2 text-center sm:first:pl-0">
+              <div className="text-2xl font-extrabold text-gradient-soft sm:text-3xl">
+                {s.value}
               </div>
-            ))}
-          </motion.div>
-        </div>
+              <div className="mt-1 text-xs text-faint sm:text-sm">{s.label}</div>
+            </div>
+          ))}
+        </motion.div>
       </motion.div>
     </section>
   )
