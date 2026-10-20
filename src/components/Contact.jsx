@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { profile } from '../data/profile'
 import SectionHeading from './ui/SectionHeading'
 import Reveal from './ui/Reveal'
-import MagneticButton from './ui/MagneticButton'
+import { useLang } from '../context/LanguageContext'
 
 /* Social icon set */
 const icons = {
@@ -19,12 +19,13 @@ const icons = {
 }
 
 const SOCIALS = [
-  { key: 'github', label: 'GitHub', handle: '@code', url: profile.socials.github, color: '#8b5cf6' },
-  { key: 'linkedin', label: 'LinkedIn', handle: 'Connect', url: profile.socials.linkedin, color: '#3b82f6' },
-  { key: 'whatsapp', label: 'WhatsApp', handle: 'Chat now', url: profile.socials.whatsapp, color: '#22c55e' },
+  { key: 'github', label: 'GitHub', url: profile.socials.github },
+  { key: 'linkedin', label: 'LinkedIn', url: profile.socials.linkedin },
+  { key: 'whatsapp', label: 'WhatsApp', url: profile.socials.whatsapp },
 ]
 
 function SocialButton({ social, index }) {
+  const { t } = useLang()
   return (
     <motion.a
       href={social.url}
@@ -37,26 +38,18 @@ function SocialButton({ social, index }) {
       whileHover={{ y: -6 }}
       className="group glass relative flex items-center gap-4 overflow-hidden rounded-2xl border-line p-4 transition-colors hover:border-line-strong"
     >
-      {/* glow wash */}
-      <div
-        className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: `radial-gradient(160px circle at 16% 50%, ${social.color}26, transparent 70%)` }}
-      />
-      <span
-        className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-bg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
-        style={{ background: social.color, boxShadow: `0 0 26px -6px ${social.color}` }}
-      >
+      <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-bg-soft text-ink transition-colors duration-300 group-hover:border-accent/50 group-hover:text-accent">
         <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
           {icons[social.key]}
         </svg>
       </span>
       <span className="relative">
         <span className="block font-bold text-ink">{social.label}</span>
-        <span className="block text-sm text-muted">{social.handle}</span>
+        <span className="block text-sm text-muted">{t(`contact.handles.${social.key}`)}</span>
       </span>
       <svg
         viewBox="0 0 24 24"
-        className="relative ml-auto h-4 w-4 text-faint transition-all duration-300 group-hover:translate-x-1 group-hover:text-accent"
+        className="relative ms-auto h-4 w-4 text-faint transition-all duration-300 group-hover:translate-x-1 group-hover:text-cyan rtl:-scale-x-100 rtl:group-hover:-translate-x-1"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.5"
@@ -67,21 +60,65 @@ function SocialButton({ social, index }) {
   )
 }
 
+/* ── Brief builder options — labels and message wording live in the strings file ── */
+const WHO_IDS = ['individual', 'company']
+const WHAT_IDS = ['website', 'webapp', 'saas', 'mobile', 'ui', 'dashboard']
+const WHEN_IDS = ['asap', 'month', 'quarter', 'exploring']
+
+/** Builds the WhatsApp message as parts, so chosen answers can be highlighted. */
+function buildMessage({ who, what, when, name, details }, c) {
+  const m = c.message
+  return [
+    { text: m.hello },
+    name.trim() && { text: `${name.trim()}${m.nameSep}`, hl: true },
+    who ? { text: c.who[who].phrase, hl: true } : { gap: m.gaps.who },
+    { text: m.looking },
+    what ? { text: c.what[what].phrase, hl: true } : { gap: m.gaps.what },
+    { text: m.end },
+    when ? { text: c.when[when].sentence, hl: true } : { gap: m.gaps.when },
+    details.trim() && { text: ` ${details.trim()}` },
+  ].filter(Boolean)
+}
+/* Numbered step wrapper — the next unanswered step gets the dashed accent frame */
+function Step({ n, kicker, question, current, done, children }) {
+  return (
+    <div
+      className={`rounded-2xl p-3 transition-colors sm:p-4 ${
+        current ? 'border border-dashed border-cyan/40 bg-cyan/[0.03]' : 'border border-transparent'
+      }`}
+    >
+      <div className="mb-3 flex flex-wrap items-center gap-3">
+        <span
+          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border font-mono text-[0.7rem] ${
+            done ? 'border-transparent bg-gradient-to-br from-cyan to-violet text-bg' : current ? 'border-cyan text-cyan' : 'border-line-strong text-faint'
+          }`}
+        >
+          {done ? '✓' : n}
+        </span>
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-faint">{kicker}</span>
+        <span className="font-semibold text-ink">{question}</span>
+      </div>
+      {children}
+    </div>
+  )
+}
+
 export default function Contact() {
-  const [form, setForm] = useState({ name: '', email: '', message: '' })
+  const { t, pick, lang } = useLang()
+  const c = t('contact')
+  const [brief, setBrief] = useState({ who: '', what: '', when: '', name: '', details: '' })
   const [copied, setCopied] = useState(false)
+  const set = (key, value) => setBrief((b) => ({ ...b, [key]: value }))
 
-  const change = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+  const required = ['who', 'what', 'when']
+  const left = required.filter((k) => !brief[k]).length
+  const current = required.find((k) => !brief[k]) ?? 'details'
+  const parts = buildMessage(brief, c)
 
-  const submit = (e) => {
-    e.preventDefault()
-    const text =
-      `Hi Ranem 👋\n\n` +
-      `From: ${form.name}\n` +
-      `Email: ${form.email}\n\n` +
-      `${form.message}`
-    const url = `${profile.socials.whatsapp}?text=${encodeURIComponent(text)}`
-    window.open(url, '_blank', 'noopener,noreferrer')
+  const send = () => {
+    if (left) return
+    const text = parts.map((p) => p.text ?? '').join('')
+    window.open(`${profile.socials.whatsapp}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer')
   }
 
   const copyEmail = async () => {
@@ -96,130 +133,202 @@ export default function Contact() {
 
   return (
     <section id="contact" className="relative py-24 sm:py-32">
-      <div className="pointer-events-none absolute left-1/2 top-10 h-[26rem] w-[26rem] -translate-x-1/2 rounded-full bg-violet/10 blur-[150px]" />
 
-      <div className="mx-auto max-w-6xl px-6">
-        <SectionHeading
-          index="// 04"
-          kicker="Get In Touch"
-          title="Let's build"
-          accent="something."
-          lead="Have a project, a role, or just an idea worth chasing? My inbox is open — pick whichever channel suits you."
-          align="center"
-        />
-
-        <div className="mt-14 grid gap-6 lg:grid-cols-5">
-          {/* left — contact form */}
-          <Reveal x={-30} className="lg:col-span-3">
-            <form
-              onSubmit={submit}
-              className="glass relative h-full rounded-3xl border-line p-6 sm:p-8"
-            >
-              <h3 className="text-xl font-bold text-ink">Send a message</h3>
-              <p className="mt-1 text-sm text-muted">
-                Fill this in and we'll continue the chat on WhatsApp.
-              </p>
-
-              <div className="mt-6 space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Your name">
-                    <input
-                      required
-                      name="name"
-                      value={form.name}
-                      onChange={change}
-                      placeholder="username"
-                      className="contact-input"
-                    />
-                  </Field>
-                  <Field label="Email">
-                    <input
-                      required
-                      type="email"
-                      name="email"
-                      value={form.email}
-                      onChange={change}
-                      placeholder="email"
-                      className="contact-input"
-                    />
-                  </Field>
-                </div>
-                <Field label="Message">
-                  <textarea
-                    required
-                    name="message"
-                    value={form.message}
-                    onChange={change}
-                    rows={4}
-                    placeholder="Tell me about your project…"
-                    className="contact-input resize-none"
-                  />
-                </Field>
-              </div>
-
-              <MagneticButton
-                type="submit"
-                strength={0.2}
-                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan to-violet px-6 py-3.5 font-semibold text-bg shadow-glow transition-transform hover:scale-[1.02]"
-              >
-                Send via WhatsApp
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
-                  <path d="M.06 24l1.68-6.13A11.86 11.86 0 0 1 .14 11.9C.14 5.35 5.49 0 12.05 0a11.82 11.82 0 0 1 8.41 3.49 11.78 11.78 0 0 1 3.48 8.42c0 6.56-5.35 11.9-11.9 11.9a11.9 11.9 0 0 1-5.69-1.45L.06 24ZM6.6 20.13c1.68 1 3.28 1.6 5.44 1.6 5.45 0 9.89-4.43 9.9-9.88a9.86 9.86 0 0 0-2.9-7 9.78 9.78 0 0 0-6.98-2.9c-5.46 0-9.9 4.44-9.9 9.89 0 2.27.66 3.97 1.77 5.75l-.99 3.63 3.66-1.09ZM17.9 14.7c-.07-.12-.27-.2-.56-.34-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.14.3-.35.44-.53.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.48 0 1.46 1.07 2.88 1.22 3.08.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.18-1.41Z" />
-                </svg>
-              </MagneticButton>
-            </form>
+      <div className="mx-auto max-w-[84rem] px-6 lg:px-10">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <SectionHeading index="// 04" kicker={c.kicker} title={c.title} accent={c.accent} />
+          <Reveal delay={0.1}>
+            <p className="max-w-sm leading-relaxed text-muted lg:mb-10">
+              {c.intro} <span className="font-semibold text-ink">{c.introStrong}</span>
+            </p>
           </Reveal>
+        </div>
 
-          {/* right — direct channels */}
-          <Reveal x={30} delay={0.1} className="lg:col-span-2">
-            <div className="flex h-full flex-col gap-3">
-              {/* email card */}
-              <div className="glass rounded-2xl border-line p-5">
-                <div className="kicker">Direct email</div>
-                <button
-                  onClick={copyEmail}
-                  className="mt-2 flex w-full items-center justify-between gap-2 text-left"
-                >
-                  <span className="truncate font-mono text-sm text-ink">{profile.email}</span>
-                  <span className="shrink-0 rounded-md border border-line-strong px-2 py-1 text-[0.65rem] font-semibold text-accent">
-                    {copied ? 'COPIED ✓' : 'COPY'}
-                  </span>
-                </button>
+        <Reveal>
+          <div className="glass mt-10 grid overflow-hidden rounded-3xl border-line lg:grid-cols-[1fr_minmax(0,22rem)]">
+            {/* ── the questions ── */}
+            <div className="space-y-3 p-3 sm:p-5">
+              <Step n={1} kicker={c.steps.who[0]} question={c.steps.who[1]} current={current === 'who'} done={!!brief.who}>
+                <div className="grid grid-cols-2 gap-1 rounded-xl border border-line bg-bg/40 p-1" role="radiogroup" aria-label={c.steps.who[1]}>
+                  {WHO_IDS.map((id) => {
+                    const on = brief.who === id
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        role="radio"
+                        aria-checked={on}
+                        onClick={() => set('who', id)}
+                        className={`rounded-lg px-4 py-3 text-sm font-semibold transition-all ${
+                          on ? 'border border-cyan/50 bg-cyan/10 text-ink shadow-glow' : 'border border-transparent text-muted hover:text-ink'
+                        }`}
+                      >
+                        {c.who[id].label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </Step>
+
+              <Step n={2} kicker={c.steps.what[0]} question={c.steps.what[1]} current={current === 'what'} done={!!brief.what}>
+                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3" role="radiogroup" aria-label={c.steps.what[1]}>
+                  {WHAT_IDS.map((id) => {
+                    const on = brief.what === id
+                    const o = c.what[id]
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        role="radio"
+                        aria-checked={on}
+                        onClick={() => set('what', id)}
+                        className={`flex items-center justify-between gap-3 rounded-xl border p-3.5 text-start transition-all ${
+                          on ? 'border-cyan/50 bg-cyan/10' : 'border-line bg-bg/30 hover:border-line-strong'
+                        }`}
+                      >
+                        <span className="min-w-0">
+                          <span className={`block font-mono text-[0.66rem] uppercase tracking-[0.18em] ${on ? 'text-cyan' : 'text-faint'}`}>
+                            {o.kicker}
+                          </span>
+                          <span className="mt-1 block text-sm font-semibold leading-snug text-ink">{o.title}</span>
+                        </span>
+                        <span
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
+                            on ? 'border-cyan' : 'border-line-strong'
+                          }`}
+                          aria-hidden="true"
+                        >
+                          {on && <span className="h-2 w-2 rounded-full bg-cyan" />}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </Step>
+
+              <Step n={3} kicker={c.steps.when[0]} question={c.steps.when[1]} current={current === 'when'} done={!!brief.when}>
+                <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={c.steps.when[1]}>
+                  {WHEN_IDS.map((id) => {
+                    const on = brief.when === id
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        role="radio"
+                        aria-checked={on}
+                        onClick={() => set('when', id)}
+                        className={`rounded-full border px-4 py-2 text-sm font-semibold transition-all ${
+                          on ? 'border-cyan/60 bg-cyan/10 text-ink' : 'border-line-strong text-muted hover:text-ink'
+                        }`}
+                      >
+                        {c.when[id].label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </Step>
+
+              <Step n={4} kicker={c.steps.details[0]} question={c.steps.details[1]} current={current === 'details'} done={false}>
+                <div className="grid gap-2 sm:grid-cols-[minmax(0,12rem)_1fr]">
+                  <input
+                    value={brief.name}
+                    onChange={(e) => set('name', e.target.value)}
+                    placeholder={c.namePlaceholder}
+                    autoComplete="name"
+                    aria-label={c.namePlaceholder}
+                    className="contact-input"
+                  />
+                  <input
+                    value={brief.details}
+                    onChange={(e) => set('details', e.target.value)}
+                    placeholder={c.detailsPlaceholder}
+                    aria-label={c.detailsLabel}
+                    className="contact-input"
+                  />
+                </div>
+              </Step>
+            </div>
+
+            {/* ── live WhatsApp preview ── */}
+            <div className="flex flex-col border-t border-line bg-bg/30 p-4 sm:p-5 lg:border-s lg:border-t-0">
+              <div className="flex items-center justify-between font-mono text-[0.68rem] uppercase tracking-[0.2em] text-faint">
+                <span>{c.preview}</span>
+                <span className="flex items-center gap-1.5 text-cyan">
+                  <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-cyan" />
+                  {c.live}
+                </span>
               </div>
 
-              {SOCIALS.map((s, i) => (
-                <SocialButton key={s.key} social={s} index={i} />
-              ))}
+              <div className="mt-4 overflow-hidden rounded-2xl border border-line bg-bg/60">
+                <div className="flex items-center gap-3 border-b border-line px-4 py-3">
+                  <img src="/me.png" alt="" className="h-10 w-10 rounded-full bg-white object-cover object-[50%_35%]" />
+                  <div>
+                    <div className="text-sm font-bold text-ink">{pick(profile, 'name')}</div>
+                    <div className="text-xs text-faint">{c.replies}</div>
+                  </div>
+                </div>
+                <div className="grid-bg p-4">
+                  <div className="ms-auto max-w-[95%] rounded-2xl rounded-se-sm border border-cyan/25 bg-gradient-to-br from-cyan/10 to-violet/10 p-3.5 text-[0.92rem] leading-relaxed text-ink">
+                    <p aria-live="polite" lang={lang}>
+                      {parts.map((p, i) =>
+                        p.gap ? (
+                          <span key={i} className="rounded border border-dashed border-line-strong px-1 text-faint">
+                            {p.gap}
+                          </span>
+                        ) : p.hl ? (
+                          <mark key={i} className="rounded bg-cyan/20 px-0.5 text-ink">
+                            {p.text}
+                          </mark>
+                        ) : (
+                          <span key={i}>{p.text}</span>
+                        ),
+                      )}
+                    </p>
+                    <div className="mt-2 text-end font-mono text-[0.62rem] text-faint">now ✓✓</div>
+                  </div>
+                </div>
+              </div>
+              <div className="h-4 shrink-0" aria-hidden="true" />
 
-              {/* location */}
-              <div className="glass mt-auto flex items-center gap-3 rounded-2xl border-line p-5">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-bg-soft text-accent">
-                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 21s-7-5.5-7-11a7 7 0 1 1 14 0c0 5.5-7 11-7 11Z" />
-                    <circle cx="12" cy="10" r="2.5" />
+              <button
+                type="button"
+                onClick={send}
+                disabled={left > 0}
+                className="group mt-4 flex w-full items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-cyan to-violet py-2.5 pe-2.5 ps-5 text-start font-semibold text-bg shadow-glow transition-all enabled:hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none lg:mt-auto"
+              >
+                <span className="flex flex-wrap items-baseline gap-x-3">
+                  {c.send}
+                  <span className="font-mono text-[0.66rem] uppercase tracking-[0.18em] opacity-75">
+                    {left ? c.stepsLeft(left) : c.ready}
+                  </span>
+                </span>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-bg text-cyan transition-transform group-enabled:group-hover:translate-x-0.5 rtl:group-enabled:group-hover:-translate-x-0.5">
+                  <svg viewBox="0 0 24 24" className="h-4 w-4 rtl:-scale-x-100" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                    <path d="M5 12h14M13 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </span>
-                <div>
-                  <div className="text-sm font-semibold text-ink">{profile.location}</div>
-                  <div className="text-xs text-faint">Working worldwide · remote</div>
-                </div>
-              </div>
+              </button>
+              <p className="mt-2 text-center text-xs text-faint">{c.editNote}</p>
             </div>
-          </Reveal>
+          </div>
+        </Reveal>
+
+        {/* ── direct channels ── */}
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="glass flex flex-col justify-center rounded-2xl border-line p-4">
+            <div className="kicker">{c.preferEmail}</div>
+            <button onClick={copyEmail} className="mt-2 flex w-full items-center justify-between gap-2 text-start">
+              <span dir="ltr" className="truncate font-mono text-sm text-ink">{profile.email}</span>
+              <span className="shrink-0 rounded-md border border-line-strong px-2 py-1 text-[0.65rem] font-semibold text-cyan">
+                {copied ? c.copied : c.copy}
+              </span>
+            </button>
+          </div>
+          {SOCIALS.map((s, i) => (
+            <SocialButton key={s.key} social={s} index={i} />
+          ))}
         </div>
       </div>
     </section>
-  )
-}
-
-/* Labelled field wrapper */
-function Field({ label, children }) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-faint">
-        {label}
-      </span>
-      {children}
-    </label>
   )
 }

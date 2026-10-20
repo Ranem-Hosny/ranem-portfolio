@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import Lenis from 'lenis'
 import { ThemeProvider } from './context/ThemeContext'
-import CustomCursor from './components/CustomCursor'
+import { LanguageProvider } from './context/LanguageContext'
 import ScrollProgress from './components/ScrollProgress'
 import Loader from './components/Loader'
 import Navbar from './components/Navbar'
@@ -48,9 +48,9 @@ export default function App() {
   }, [])
 
   return (
+    <LanguageProvider>
     <ThemeProvider>
       {/* global flourishes */}
-      <CustomCursor />
       <ScrollProgress />
       <div className="noise-overlay" aria-hidden="true" />
 
@@ -76,5 +76,6 @@ export default function App() {
         <Footer />
       </div>
     </ThemeProvider>
+    </LanguageProvider>
   )
 }

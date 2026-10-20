@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { profile } from '../data/profile'
+import { useLang } from '../context/LanguageContext'
 
 /**
  * Loader — full-screen boot sequence: a counter races to 100 while a
@@ -8,30 +9,27 @@ import { profile } from '../data/profile'
  */
 export default function Loader({ onDone }) {
   const [progress, setProgress] = useState(0)
+  const { t, pick } = useLang()
 
   useEffect(() => {
     let value = 0
     const tick = () => {
       // ease the count: fast start, slow finish
-      value += Math.max(1, Math.round((100 - value) * 0.07))
+      value += Math.max(1, Math.round((100 - value) * 0.16))
       if (value >= 100) {
         value = 100
         setProgress(100)
-        setTimeout(onDone, 620)
+        setTimeout(onDone, 300)
         return
       }
       setProgress(value)
-      setTimeout(tick, 70)
+      setTimeout(tick, 40)
     }
-    const start = setTimeout(tick, 280)
+    const start = setTimeout(tick, 120)
     return () => clearTimeout(start)
   }, [onDone])
 
-  const lines = [
-    '> initializing interface...',
-    '> loading components & motion...',
-    '> compiling experience...',
-  ]
+  const lines = t('loader')
 
   return (
     <motion.div
@@ -40,7 +38,6 @@ export default function Loader({ onDone }) {
       transition={{ duration: 0.5 }}
     >
       {/* ambient glow */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan/15 blur-[120px]" />
 
       {/* spinning ring + portrait */}
       <div className="relative mb-10 h-32 w-32">
@@ -52,7 +49,7 @@ export default function Loader({ onDone }) {
           transition={{ delay: 0.2, duration: 0.6 }}
         >
           <span className="text-2xl font-black tracking-tight text-gradient glow-text">
-            {profile.firstName}
+            {pick(profile, 'firstName')}
           </span>
         </motion.div>
       </div>

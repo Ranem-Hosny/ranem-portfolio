@@ -14,10 +14,12 @@ export default {
         ink: 'var(--ink)',
         muted: 'var(--muted)',
         faint: 'var(--faint)',
-        // Fixed neon accents
-        cyan: '#22d3ee',
-        violet: '#8b5cf6',
-        electric: '#3b82f6',
+        // One accent colour. The old cyan / violet / electric names all point to it,
+        // so legacy "from-cyan to-violet" gradients render as a single flat colour.
+        accent: 'rgb(var(--accent-rgb) / <alpha-value>)',
+        cyan: 'rgb(var(--accent-rgb) / <alpha-value>)',
+        violet: 'rgb(var(--accent-rgb) / <alpha-value>)',
+        electric: 'rgb(var(--accent-rgb) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['Cairo', 'system-ui', 'sans-serif'],
@@ -27,8 +29,9 @@ export default {
         ultra: '0.35em',
       },
       boxShadow: {
-        glow: '0 0 40px -8px rgba(34,211,238,0.45)',
-        'glow-violet': '0 0 50px -10px rgba(139,92,246,0.5)',
+        // No neon glow — just a soft depth shadow
+        glow: '0 10px 30px -14px rgba(0,0,0,0.55)',
+        'glow-violet': '0 10px 30px -14px rgba(0,0,0,0.55)',
       },
       animation: {
         'blob-1': 'blob1 22s ease-in-out infinite',
@@ -40,8 +43,20 @@ export default {
         shimmer: 'shimmer 3.5s linear infinite',
         'pulse-soft': 'pulseSoft 2.6s ease-in-out infinite',
         marquee: 'marquee 38s linear infinite',
+        'phone-pan': 'phonePan 7s ease-in-out infinite alternate',
+        'seg-fill': 'segFill 3s linear forwards',
       },
       keyframes: {
+        // Fills the active project segment while autoplay counts down
+        segFill: {
+          '0%': { transform: 'scaleX(0)' },
+          '100%': { transform: 'scaleX(1)' },
+        },
+        // Sweeps a cropped screenshot side to side inside the phone frame
+        phonePan: {
+          '0%': { objectPosition: '0% top' },
+          '100%': { objectPosition: '100% top' },
+        },
         blob1: {
           '0%,100%': { transform: 'translate(0,0) scale(1)' },
           '33%': { transform: 'translate(60px,-50px) scale(1.12)' },

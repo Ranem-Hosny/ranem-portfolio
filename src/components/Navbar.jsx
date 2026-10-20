@@ -4,30 +4,42 @@ import { useTheme } from '../context/ThemeContext'
 import { useScrollSpy } from '../hooks/useScrollSpy'
 import { profile } from '../data/profile'
 import { smoothScrollTo } from '../utils/scroll'
+import { useLang } from '../context/LanguageContext'
 
-const LINKS = [
-  { id: 'home', label: 'Home' },
-  { id: 'about', label: 'About' },
-  { id: 'skills', label: 'Skills' },
-  { id: 'work', label: 'Work' },
-  { id: 'contact', label: 'Contact' },
-]
+const LINKS = ['home', 'about', 'skills', 'work', 'contact'].map((id) => ({ id }))
 const IDS = LINKS.map((l) => l.id)
+
+/** EN ⇄ ع language switch — shows the language you'll switch to. */
+function LangToggle() {
+  const { t, toggleLang } = useLang()
+  return (
+    <button
+      type="button"
+      onClick={toggleLang}
+      aria-label={t('nav.switchLangLabel')}
+      title={t('nav.switchLangLabel')}
+      className="flex h-9 min-w-[2.25rem] items-center justify-center rounded-full border border-line-strong bg-bg-soft px-2.5 text-sm font-bold text-ink transition-colors hover:border-cyan hover:text-cyan"
+    >
+      {t('nav.switchLang')}
+    </button>
+  )
+}
 
 /** Animated sun / moon theme switch. */
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
+  const { t, isAr } = useLang()
   const isDark = theme === 'dark'
 
   return (
     <button
       onClick={toggleTheme}
-      aria-label="Toggle color theme"
+      aria-label={t('nav.theme')}
       className="relative h-9 w-16 rounded-full border border-line-strong bg-bg-soft p-1 transition-colors"
     >
       <motion.span
         className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-cyan to-violet text-bg"
-        animate={{ x: isDark ? 0 : 28 }}
+        animate={{ x: isDark ? 0 : isAr ? -28 : 28 }}
         transition={{ type: 'spring', stiffness: 480, damping: 28 }}
       >
         <AnimatePresence mode="wait" initial={false}>
@@ -59,6 +71,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const active = useScrollSpy(IDS)
+  const { t, pick } = useLang()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -81,14 +94,14 @@ export default function Navbar() {
       className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-3 sm:pt-4"
     >
       <nav
-        className={`flex w-full max-w-5xl items-center justify-between rounded-2xl px-4 py-2.5 transition-all duration-500 sm:px-5 ${
-          scrolled ? 'glass border-line-strong shadow-glow' : 'border border-transparent'
+        className={`flex w-full max-w-7xl items-center justify-between rounded-2xl px-4 py-2.5 transition-all duration-500 sm:px-5 ${
+          scrolled ? 'nav-glass shadow-glow' : 'nav-glass'
         }`}
       >
         {/* logo */}
         <a href="#home" onClick={(e) => go(e, 'home')} className="group flex items-center">
           <span className="text-lg font-extrabold tracking-tight text-ink transition-colors group-hover:text-accent">
-            {profile.firstName}
+            {pick(profile, 'firstName')}
             <span className="text-accent">.</span>
           </span>
         </a>
@@ -111,26 +124,27 @@ export default function Navbar() {
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
-                {link.label}
+                {t(`nav.${link.id}`)}
               </a>
             </li>
           ))}
         </ul>
 
         <div className="flex items-center gap-2.5">
+          <LangToggle />
           <ThemeToggle />
           <a
             href="#contact"
             onClick={(e) => go(e, 'contact')}
             className="hidden rounded-lg bg-ink px-4 py-2 text-sm font-semibold text-bg transition-transform hover:scale-105 sm:block"
           >
-            Let's talk
+            {t('nav.letsTalk')}
           </a>
 
           {/* mobile toggle */}
           <button
             onClick={() => setOpen((o) => !o)}
-            aria-label="Menu"
+            aria-label={t('nav.menu')}
             className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-lg border border-line-strong md:hidden"
           >
             <motion.span animate={{ rotate: open ? 45 : 0, y: open ? 4 : 0 }} className="h-0.5 w-4 bg-ink" />
@@ -163,7 +177,7 @@ export default function Navbar() {
                     active === link.id ? 'bg-line text-ink' : 'text-muted'
                   }`}
                 >
-                  {link.label}
+                  {t(`nav.${link.id}`)}
                 </a>
               </motion.li>
             ))}

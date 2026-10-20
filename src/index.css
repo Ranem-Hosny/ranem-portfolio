@@ -6,42 +6,44 @@
    THEME TOKENS — toggled via the `dark` class on <html>
    ============================================================ */
 :root {
-  /* Light mode — bright lab, neon still alive */
-  --bg: #e9ebf3;
-  --bg-soft: #f5f6fb;
-  --surface: rgba(255, 255, 255, 0.62);
+  /* Light mode — cool paper, one muted green accent */
+  --bg: #f2f3f1;
+  --bg-soft: #f8f8f6;
+  --surface: rgba(255, 255, 255, 0.7);
   --surface-solid: #ffffff;
-  --border: rgba(20, 23, 42, 0.1);
-  --border-strong: rgba(20, 23, 42, 0.18);
-  --ink: #14172a;
-  --muted: #545a73;
-  --faint: #9298b0;
-  --accent: #0e9bb8;
-  --accent-2: #7c3aed;
-  --accent-3: #2563eb;
-  --glow: 0.35;
-  --grid: rgba(20, 23, 42, 0.055);
-  --noise: 0.025;
+  --border: rgba(23, 25, 28, 0.09);
+  --border-strong: rgba(23, 25, 28, 0.16);
+  --ink: #17191c;
+  --muted: #5e636a;
+  --faint: #8d9298;
+  --accent: #3f7d5e;
+  --accent-rgb: 63 125 94;
+  --accent-2: var(--accent);
+  --accent-3: var(--accent);
+  --glow: 0;
+  --grid: rgba(23, 25, 28, 0.05);
+  --noise: 0.02;
   color-scheme: light;
 }
 
 html.dark {
-  /* Dark mode — deep-space terminal */
-  --bg: #060711;
-  --bg-soft: #0a0c18;
-  --surface: rgba(255, 255, 255, 0.035);
-  --surface-solid: #0d0f1d;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
-  --ink: #e9ebf6;
-  --muted: #8b91ab;
-  --faint: #555a78;
-  --accent: #22d3ee;
-  --accent-2: #8b5cf6;
-  --accent-3: #3b82f6;
-  --glow: 1;
-  --grid: rgba(255, 255, 255, 0.045);
-  --noise: 0.04;
+  /* Dark mode — warm charcoal, one muted green accent (no gradients, no glow) */
+  --bg: #121413;
+  --bg-soft: #161918;
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-solid: #1a1d1c;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.13);
+  --ink: #ecedea;
+  --muted: #8f948f;
+  --faint: #5f6460;
+  --accent: #7fb89a;
+  --accent-rgb: 127 184 154;
+  --accent-2: var(--accent);
+  --accent-3: var(--accent);
+  --glow: 0;
+  --grid: rgba(255, 255, 255, 0.035);
+  --noise: 0.03;
   color-scheme: dark;
 }
 
@@ -64,21 +66,9 @@ body {
   transition: background-color 0.6s ease, color 0.6s ease;
 }
 
-/* Hide native cursor on fine-pointer devices — replaced by CustomCursor */
-@media (pointer: fine) {
-  body {
-    cursor: none;
-  }
-  a,
-  button,
-  [data-cursor] {
-    cursor: none;
-  }
-}
-
 ::selection {
-  background: var(--accent-2);
-  color: #fff;
+  background: var(--accent);
+  color: var(--bg);
 }
 
 /* Scrollbar */
@@ -89,7 +79,7 @@ body {
   background: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(var(--accent), var(--accent-2));
+  background: var(--border-strong);
   border-radius: 99px;
   border: 2px solid var(--bg);
 }
@@ -109,18 +99,27 @@ section {
     border: 1px solid var(--border);
   }
 
-  .text-gradient {
-    background: linear-gradient(110deg, var(--accent), var(--accent-2) 55%, var(--accent-3));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  /* Navbar: see-through frosted glass in both themes (never a solid white bar) */
+  .nav-glass {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--bg) 35%, transparent),
+      color-mix(in srgb, var(--bg) 15%, transparent)
+    );
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid var(--border-strong);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
+  /* Accent words — one flat colour, no blended gradient */
+  .text-gradient {
+    color: var(--accent);
+  }
+
+  /* Emphasised figures (stats, company names) — plain ink */
   .text-gradient-soft {
-    background: linear-gradient(110deg, var(--accent), var(--accent-2));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--ink);
   }
 
   /* Code-comment label used above section titles */
@@ -173,7 +172,7 @@ section {
 
 @layer utilities {
   .glow-text {
-    text-shadow: 0 0 28px rgba(34, 211, 238, calc(0.55 * var(--glow)));
+    text-shadow: none;
   }
   .perspective {
     perspective: 1400px;
@@ -199,30 +198,6 @@ section {
   pointer-events: none;
   opacity: var(--noise);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* Custom cursor */
-.cursor-dot,
-.cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 9999;
-  pointer-events: none;
-  border-radius: 50%;
-  mix-blend-mode: difference;
-}
-.cursor-dot {
-  width: 7px;
-  height: 7px;
-  margin: -3.5px 0 0 -3.5px;
-  background: #fff;
-}
-.cursor-ring {
-  width: 38px;
-  height: 38px;
-  margin: -19px 0 0 -19px;
-  border: 1.5px solid rgba(255, 255, 255, 0.65);
 }
 
 /* Typing caret */
@@ -257,6 +232,20 @@ section {
 }
 
 /* ============================================================
+   ARABIC (RTL) — Arabic letters connect, so wide tracking breaks
+   words apart; mono text falls back to Cairo for Arabic glyphs.
+   ============================================================ */
+html[dir='rtl'] .kicker,
+html[dir='rtl'] .font-mono {
+  font-family: 'JetBrains Mono', 'Cairo', monospace;
+}
+html[dir='rtl'] .kicker,
+html[dir='rtl'] .font-mono,
+html[dir='rtl'] [class*='tracking-'] {
+  letter-spacing: 0 !important;
+}
+
+/* ============================================================
    ACCESSIBILITY — respect reduced motion
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
@@ -267,5 +256,19 @@ section {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ── Work section: the phone scales with the section height on desktop ── */
+.phone-fit {
+  width: 13.5rem;
+}
+@media (min-width: 1024px) {
+  .work-stage {
+    container-type: size;
+  }
+  .phone-fit {
+    /* screen is 9:19.5, plus 20px of bezel on each axis */
+    width: min(20rem, calc((100cqh - 20px) * 9 / 19.5 + 20px));
   }
 }
